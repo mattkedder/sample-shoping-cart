@@ -34,9 +34,10 @@ const actions = {
         context.commit('UPDATE_CART_ITEMS', data)
     },
     async addToCart(context, payload) {
-        const itemExist = false;
+        // const itemExist = false;
+        const itemExist = this.dispatch('checkItemIfExist', payload)
         if(itemExist) {
-            this.updateQty(payload)
+            this.dispatch('updateQty', payload)
         } else {
             payload.qty = 1
             const { data } = await axios.post(`${API_URL}/carts`, payload)
@@ -44,21 +45,21 @@ const actions = {
         }
     },
     async updateQty(context, payload) {
-        const updatedQty = this.getQtyById(payload);
-        payload.qty = updatedQty + 1
-        const {data} = await axios.put(`${API_URL}/carts`, payload)
+        const currentQty = await this.dispatch('getQtyById', payload);
+        payload.qty = currentQty + 1
+        const {data} = await axios.put(`${API_URL}/carts/${payload.id}`, payload)
         context.commit('UPDATED_QTY', data)
     },
     async removeCart(context, payload) {
         const { data } =  await axios.delete(`${API_URL}/carts/${payload.id}`)
         context.commit('REMOVE_CART', data)
     },
-    getQtyById(state, data) {
-        const index = state.CartItem.findIndex(item => item.id === data.id)
-        return state.CartItems[index].qty
+    getQtyById({getters}, data) {
+        const index = getters.cartItems.findIndex(item => item.id === data.id)
+        return getters.cartItems[index].qty
     },
-    checkItemIfExist(state, payload) {
-        const index = state.CartItem.findIndex(item => item.id === payload.id)
+    checkItemIfExist({ getters }, payload) {
+        const index = getters.cartItems.findIndex(item => item.id === payload.id)
         return index ? true: false;
     }
 }
