@@ -1,11 +1,21 @@
 <template>
-    <li class="list-group-item d-flex justify-content-between align-items-center" id="summary_product_' + id +'">
-        <span id="summary_product_name_' + id + '">Air Jordan  Noble Red x 1</span> 
-        <span class="btn btn-sm btn-secondary" ><font-awesome-icon icon="trash" /></span>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ cart.name }} x {{ cart.qty }}</span> 
+        <span class="btn btn-sm btn-secondary" @click="removeCart(cart)"><font-awesome-icon icon="trash" /></span>
     </li>
 </template>
 <script>
+import {mapActions} from 'vuex'
 export default {
-    name: "CartItem"
+    name: "CartItem",
+    props: {
+        cart: {
+            type: Object,
+            required: true
+        }
+    },
+    methods: {
+        ...mapActions(['removeCart'])
+    }
 }
 </script>
